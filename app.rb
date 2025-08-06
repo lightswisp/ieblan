@@ -1,7 +1,8 @@
 #!/bin/ruby
 require "logger"
 require "optparse"
-require_relative "iptables"
+require "colorize"
+require_relative "helpers/iptables"
 
 module Modes
   MODE_BLOCK   = 0
@@ -53,22 +54,22 @@ ARGV << "-h" if ARGV.empty?
 options = Parser.parse ARGV
 
 if Process.uid != 0
-  raise "run as root please!"
+  raise "run as root please!".red
 end
 
-raise "this script is intended for android only!" unless RUBY_PLATFORM.match?(/android/) 
+raise "this script is intended for android only!".red unless RUBY_PLATFORM.match?(/android/) 
 
 if options.gui
   raise "todo"
 else
-  raise "targets file was not found!"               unless File.exist?(options.file)
+  raise "targets file was not found!".red unless File.exist?(options.file)
 
   $iptables = IPTables.new(options)
   $iptables.update_rules()
 
   LOGGER = Logger.new(STDOUT)
   s_time = Time.now
-  LOGGER.info("starting in #{options.mode == Modes::MODE_BLOCK ? 'blocking' : 'unblocking'} mode")
+  LOGGER.info("starting in #{options.mode == Modes::MODE_BLOCK ? 'blocking' : 'unblocking'} mode".gray)
 
   if options.mode == Modes::MODE_BLOCK
     $iptables.rules_add()
@@ -77,5 +78,5 @@ else
   end
 
   e_time = ((Time.now - s_time) ).round(2)
-  LOGGER.info("finished in #{e_time} seconds")
+  LOGGER.info("finished in #{e_time} seconds".gray)
 end

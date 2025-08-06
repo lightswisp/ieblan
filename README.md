@@ -25,7 +25,7 @@ com.termux
 Then you just specify the mode you want to run this script in and the path to this file:
 
 ```bash 
-sudo ruby block.rb --mode=block --file=targets
+sudo ruby app.rb --mode=block --file=targets
 ```
 
 There are just two modes: "block" and "unblock"

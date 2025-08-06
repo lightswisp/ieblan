@@ -1,4 +1,5 @@
 require "logger"
+require "colorize"
 
 IPTABLES_BIN  = "iptables"
 IP6TABLES_BIN = "ip6tables"
@@ -66,39 +67,39 @@ class IPTables
   end
 
   def rules_add4
-    @logger.info("adding for ipv4")
+    @logger.info("adding for ipv4".gray)
     targets = File.readlines(@options.file, chomp: true)
     targets.each do |target|
       path = File.join("/data", "data", target)
       unless File.exist?(path)
-        @logger.fatal("path #{path} doesn't exist")
+        @logger.fatal("path #{path} doesn't exist".red)
         next
       end
       o_uid = File.stat(path).uid
       if rule_exist4?(o_uid)
-        @logger.warn("rule for #{o_uid} already exists, skipping..")
+        @logger.warn("rule for #{path} already exists, skipping..".yellow)
         next
       end
-      @logger.info("adding new ipv4 rule for #{target}") 
+      @logger.info("adding new ipv4 rule for #{target}".green) 
       r = IO.popen([IPTABLES_BIN, "-A", "OUTPUT", "-m", "owner", "--uid-owner", o_uid.to_s, "-j", "DROP"]).read
     end
   end
     
   def rules_add6
-    @logger.info("adding for ipv6")
+    @logger.info("adding for ipv6".gray)
     targets = File.readlines(@options.file, chomp: true)
     targets.each do |target|
       path = File.join("/data", "data", target)
       unless File.exist?(path)
-        @logger.fatal("path #{path} doesn't exist")
+        @logger.fatal("path #{path} doesn't exist".red)
         next
       end
       o_uid = File.stat(path).uid
       if rule_exist6?(o_uid)
-        @logger.warn("rule for #{o_uid} already exists, skipping..")
+        @logger.warn("rule for #{path} already exists, skipping..".yellow)
         next
       end
-      @logger.info("adding new ipv6 rule for #{target}") 
+      @logger.info("adding new ipv6 rule for #{target}".green) 
       r = IO.popen([IP6TABLES_BIN, "-A", "OUTPUT", "-m", "owner", "--uid-owner", o_uid.to_s, "-j", "DROP"]).read
     end
   end
@@ -109,42 +110,42 @@ class IPTables
   end
 
   def rules_del4
-    @logger.info("deleting for ipv4")
+    @logger.info("deleting for ipv4".gray)
     targets = File.readlines(@options.file, chomp: true)
     targets.each do |target|
       path = File.join("/data", "data", target)
       unless File.exist?(path)
-        @logger.fatal("path #{path} doesn't exist")
+        @logger.fatal("path #{path} doesn't exist".red)
         next
       end
       o_uid = File.stat(path).uid
       line_number = find_rule4_line(o_uid) 
       if line_number.nil?
-        @logger.warn("skipping rule for #{path}")
+        @logger.warn("skipping rule for #{path}".yellow)
         next
       end
-      @logger.info("deleting ipv4 rule for #{target}") 
+      @logger.info("deleting ipv4 rule for #{target}".green) 
       r = IO.popen([IPTABLES_BIN, "-D", "OUTPUT", line_number]).read
       @out_rules4 = get_rules4()
     end
   end
 
   def rules_del6
-    @logger.info("deleting for ipv6")
+    @logger.info("deleting for ipv6".gray)
     targets = File.readlines(@options.file, chomp: true)
     targets.each do |target|
       path = File.join("/data", "data", target)
       unless File.exist?(path)
-        @logger.fatal("path #{path} doesn't exist")
+        @logger.fatal("path #{path} doesn't exist".red)
         next
       end
       o_uid = File.stat(path).uid
       line_number = find_rule6_line(o_uid) 
       if line_number.nil?
-        @logger.warn("skipping rule for #{path}")
+        @logger.warn("skipping rule for #{path}".yellow)
         next
       end
-      @logger.info("deleting ipv6 rule for #{target}") 
+      @logger.info("deleting ipv6 rule for #{target}".green) 
       r = IO.popen([IP6TABLES_BIN, "-D", "OUTPUT", line_number]).read
       @out_rules6 = get_rules6()
     end
