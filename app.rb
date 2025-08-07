@@ -60,7 +60,8 @@ end
 raise "this script is intended for android only!".red unless RUBY_PLATFORM.match?(/android/) 
 
 if options.gui
-  raise "todo"
+  require_relative "ui/server"
+  Server.run!
 else
   raise "targets file was not found!".red unless File.exist?(options.file)
 
