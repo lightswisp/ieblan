@@ -5,37 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ieblan</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
   </head>
-<body>
+<body class="bg-dark">
   <div class="container">
-    <h1 class="mb-4">IPTables Enhanced Blocking Layer for Android Network</h1>
-    <% @apps.each do |app| %>
-      <% 
-        app = app[8..-1] # del package: 
-        pkg_name, uid = app.split(" ")   
-        uid = uid.split(":").last
-        icon_name = pkg_name.split(".").last
-        icon_path = File.join("icons", icon_name) + ".png"
-        icon_file = File.exist?(File.join(settings.public_folder, icon_path)) ? icon_path : File.join("icons", "android_system.png")
-      %>
+    <div class="row">
 
-    <div class="d-flex flex-column flex-wrap">
-      <img src="<%= icon_file %>" class="img-thumbnail img-fluid" style="max-width: 60px; max-height: 60px;">
+      <% @apps.each do |app| %>
+        <% 
+          app = app[8..-1] # del package: 
+          pkg_name, uid = app.split(" ")   
+          uid = uid.split(":").last
+          icon_name = @@appfilter[pkg_name]
+          if icon_name.nil?
+            icon_file = File.join("icons", "android_system.png")
+          else
+            icon_file = File.join("icons", icon_name) 
+          end
+        %>
 
-      <p class="mb-0 small"><%= pkg_name %></p>
-      <form method="post" action="/block">
-        <input type="hidden" name="pkg_name" value="<%= pkg_name %>">
-        <button type="submit" class="btn btn-danger btn-sm">Block</button>
-      </form>
-      <form method="post" action="/unblock">
-        <input type="hidden" name="pkg_name" value="<%= pkg_name %>">
-        <button type="submit" class="btn btn-success btn-sm">Unblock</button>
-      </form>
+      <div class="col-12 mt-5 d-flex flex-column justify-content-center align-items-center">
+        <div class="rounded-0 py-1 bg-dark text-light card w-100 mx-auto" >
+          <div class="row g-0 align-items-center">
+            <div class="col-2 ">
+              <img src="<%= icon_file %>" class="card-img-top">
+            </div>
+            <div class="col-10">
+              <div class="card-body">
+                <h5 class="card-title"><%= pkg_name %></h5> 
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="btn-group w-100" role="group">
+          <button type="button" class="rounded-0 btn btn-danger">block</button>
+          <button type="button" class="rounded-0 btn btn-success">unblock</button>
+        </div>
+      </div>
+
+      <% end %>
     </div>
-
-
-    <% end %>
-    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 </body>
