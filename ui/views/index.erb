@@ -1,52 +1,122 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ieblan</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-  </head>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for HTML5 for Linux version 5.7.45">
+  <meta charset="utf-8">
+  <meta name="viewport" content=
+  "width=device-width, initial-scale=1">
+  <title>ieblan</title>
+  <link href=
+  "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+  rel="stylesheet" integrity=
+  "sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+  crossorigin="anonymous">
+  <link rel="stylesheet" href=
+  "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+  <script src=
+  "https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
 <body class="bg-dark">
   <div class="container">
+    <p class="fs-6 fw-light text-light mt-2 mb-2"><%= @version %></p>
     <div class="row">
-
-      <% @apps.each do |app| %>
-        <% 
-          app = app[8..-1] # del package: 
-          pkg_name, uid = app.split(" ")   
-          uid = uid.split(":").last
-          icon_name = @@appfilter[pkg_name]
-          if icon_name.nil?
-            icon_file = File.join("icons", "android_system.png")
-          else
-            icon_file = File.join("icons", icon_name) 
-          end
-        %>
-
-      <div class="col-12 mt-5 d-flex flex-column justify-content-center align-items-center">
-        <div class="rounded-0 py-1 bg-dark text-light card w-100 mx-auto" >
+      <%@apps.each do |app| %>
+      <div class=
+      "col-12 mt-2 d-flex flex-column justify-content-center align-items-center">
+        <div class=
+        "rounded-0 py-1 bg-dark text-light card w-100 mx-auto">
           <div class="row g-0 align-items-center">
-            <div class="col-2 ">
-              <img src="<%= icon_file %>" class="card-img-top">
-            </div>
+            <div class="col-2"><img src=
+            "%3C%=%20app.icon_file%20%%3E" class=
+            "card-img-top"></div>
             <div class="col-10">
               <div class="card-body">
-                <h5 class="card-title"><%= pkg_name %></h5> 
+                <h5 class="card-title"><%= app.pkg_name %></h5>
               </div>
             </div>
           </div>
         </div>
         <div class="btn-group w-100" role="group">
-          <button type="button" class="rounded-0 btn btn-danger">block</button>
-          <button type="button" class="rounded-0 btn btn-success">unblock</button>
+          <%if app.blocked %>
+            <button data-pkg="<%= app.pkg_name %>" onclick="unblock(this)" class="rounded-0 btn btn-success">unblock</button> 
+          <%else %>
+            <button data-pkg="<%= app.pkg_name %>" onclick="block(this)" class="rounded-0 btn btn-danger">block</button> 
+          <%end %>
         </div>
       </div>
-
-      <% end %>
+    <%end %>
     </div>
   </div>
+  <script src=
+  "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+  crossorigin="anonymous"></script> 
+  <script>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    async function block(b){
+      let pkg_name = b.dataset.pkg
+
+      const response = await fetch('/block-one', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ pkg_name: pkg_name })
+      });
+
+      if(response.ok){
+        Swal.fire({
+          icon: 'success',
+          title: 'blocked!',
+          text: `${pkg_name} has been successfully blocked.`,
+          timer: 2000,
+          showConfirmButton: false
+        });
+        b.innerText = "unblock"
+        b.setAttribute("class", "rounded-0 btn btn-success")
+        b.setAttribute("onclick", "unblock(this)")
+      }
+      else{
+        Swal.fire({
+          icon: 'error',
+          title: 'error',
+          text: `failed to block ${pkg_name}.`,
+        });
+      }
+    }
+
+    async function unblock(b){
+      let pkg_name = b.dataset.pkg
+
+      const response = await fetch('/unblock-one', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ pkg_name: pkg_name })
+      });
+
+      if(response.ok){
+        Swal.fire({
+          icon: 'success',
+          title: 'unblocked!',
+          text: `${pkg_name} has been successfully unblocked.`,
+          timer: 2000,
+          showConfirmButton: false
+        });
+        b.innerText = "block"
+        b.setAttribute("class", "rounded-0 btn btn-danger")
+        b.setAttribute("onclick", "block(this)")
+      }
+      else{
+        Swal.fire({
+          icon: 'error',
+          title: 'error',
+          text: `failed to unblock ${pkg_name}.`,
+        });
+      }
+    }
+  </script>
 </body>
 </html>

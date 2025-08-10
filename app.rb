@@ -65,17 +65,18 @@ if options.gui
 else
   raise "targets file was not found!".red unless File.exist?(options.file)
 
-  $iptables = IPTables.new(options)
-  $iptables.update_rules()
+  targets = File.readlines(options.file, chomp: true)
+  iptables = IPTables.new()
+  iptables.init_rules()
 
   LOGGER = Logger.new(STDOUT)
   s_time = Time.now
   LOGGER.info("starting in #{options.mode == Modes::MODE_BLOCK ? 'blocking' : 'unblocking'} mode".gray)
 
   if options.mode == Modes::MODE_BLOCK
-    $iptables.rules_add()
+    iptables.rules_add(targets)
   else
-    $iptables.rules_del()
+    iptables.rules_del(targets)
   end
 
   e_time = ((Time.now - s_time) ).round(2)
