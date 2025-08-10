@@ -13,6 +13,15 @@ https://source.android.com/docs/security/app-sandbox
 - rooted device
 - terminal emulator (something like termux)
 ## How to run it 
+There are two modes available: web gui and cli. 
+### GUI
+
+```bash
+sudo ./app --gui 
+```
+After that navigate to http://127.0.0.1:4567
+
+### CLI
 
 You just need to clone this repository and create an additional file which will contain apps (package names) that you want to block an internet access to. Applications must be separated by a newline.
 An example file will look something like this:
@@ -25,7 +34,7 @@ com.termux
 Then you just specify the mode you want to run this script in and the path to this file:
 
 ```bash 
-sudo ruby app.rb --mode=block --file=targets
+sudo ./app --mode=block --file=targets
 ```
 
 There are just two modes: "block" and "unblock"
