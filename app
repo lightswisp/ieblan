@@ -3,6 +3,7 @@ require "logger"
 require "optparse"
 require "colorize"
 require_relative "helpers/iptables"
+require_relative "helpers/requirements"
 
 module Modes
   MODE_BLOCK   = 0
@@ -58,6 +59,8 @@ if Process.uid != 0
 end
 
 raise "this script is intended for android only!".red unless RUBY_PLATFORM.match?(/android/) 
+
+raise "you are missing some binaries!" unless host_meets_requirements?
 
 if options.gui
   require_relative "ui/server"
