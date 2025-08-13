@@ -2,6 +2,7 @@
 require "logger"
 require "optparse"
 require "colorize"
+require_relative "helpers/backup"
 require_relative "helpers/iptables"
 require_relative "helpers/requirements"
 
@@ -12,7 +13,14 @@ end
 
 TARGETS_FILE  = "targets"
 
-Options = Struct.new(:mode, :file, :gui)
+Options = Struct.new(
+  :mode, 
+  :file, 
+  :gui,
+  :backup_dir,
+  :backup_limit,
+  :restore_num
+)
 class Parser
   def self.parse(options)
     # default settings 
@@ -38,6 +46,38 @@ class Parser
 
       opts.on("-fFILE", "--file=FILE", "targets file path") do |f|
         args.file = f
+      end
+
+      opts.on("-lLIMIT", "--backup-limit=LIMIT", "limit of backups") do |l|
+        args.backup_limit = l
+        raise "todo"
+      end
+
+      opts.on("--backup-dir=DIR", "specific backups dir") do |d|
+        args.backup_dir = d
+        raise "todo"
+      end
+
+      opts.on("--backup-list", "list available backups") do 
+        if args.backup_dir
+          b = Backup.new(args.backup_dir).list4
+        else
+          b = Backup.new.list4
+        end
+        unless b.size.zero?
+          puts "available backups:"
+          b.each_with_index do |b, i|
+            puts "\t [ #{i.to_s.yellow} ] #{b.gray}"
+          end
+        else
+          puts "no backups available"
+        end
+        exit
+      end
+
+      opts.on("--backup-restore=NUM", "restore the backup") do |n|
+        args.restore_num = n.to_i
+        raise "todo"
       end
 
       opts.on("-h", "--help", "Prints this help") do

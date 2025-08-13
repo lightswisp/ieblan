@@ -10,7 +10,7 @@ IPTABLES_RESTORE_BIN  = "iptables-restore"
 IP6TABLES_RESTORE_BIN = "ip6tables-restore"
 
 class IPTables 
-  def initialize()
+  def initialize(backup_path="backups", backup_limit=3)
     @out_rules4 = nil
     @out_rules6 = nil
     @backup4  = save4()
@@ -20,7 +20,7 @@ class IPTables
     @logger  = Logger.new(STDOUT)
 
     # we do it on every init
-    @backup = Backup.new(3)
+    @backup = Backup.new(backup_path, backup_limit)
     @backup.do_backup(@backup4, @backup6)
   end
 

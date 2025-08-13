@@ -2,7 +2,7 @@ require "logger"
 require "colorize"
 
 class Backup
-  def initialize(path="backups", limit)
+  def initialize(path="backups", limit=3)
     @path  = path
     @limit = limit
     @v4_path = File.join(@path, "v4")
@@ -12,6 +12,14 @@ class Backup
     # create dirs
     FileUtils.makedirs(@v4_path) unless Dir.exist?(@v4_path)
     FileUtils.makedirs(@v6_path) unless Dir.exist?(@v6_path)
+  end
+
+  def list4
+    return Dir.children(@v4_path).sort_by{|c| File.stat(File.join(@v4_path, c)).ctime}
+  end
+
+  def list6
+    return Dir.children(@v6_path).sort_by{|c| File.stat(File.join(@v6_path, c)).ctime}
   end
 
   def do_backup(backup4_contents, backup6_contents)
