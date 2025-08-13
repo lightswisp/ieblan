@@ -4,7 +4,11 @@ REQUIRED_BINARIES = [
   "iptables",
   "ip6tables",
   "cmd",
-  "xdg-open"
+  "xdg-open",
+  "iptables-save",
+  "ip6tables-save",
+  "iptables-restore",
+  "ip6tables-restore"
 ]
 
 def host_meets_requirements?

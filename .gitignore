@@ -3,3 +3,4 @@ targets
 parse.rb
 mkmf.log
 backups
+sync.sh
