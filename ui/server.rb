@@ -50,7 +50,8 @@ class Server < Sinatra::Base
 
   get '/' do 
     @apps = settings.apps
-    @version = settings.iptables.version
+    @version4 = settings.iptables.version4
+    @version6 = settings.iptables.version6
     erb :index
   end
 

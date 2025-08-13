@@ -64,6 +64,9 @@ raise "you are missing some binaries!" unless host_meets_requirements?
 
 if options.gui
   require_relative "ui/server"
+  Thread.new {
+    IO.popen(["xdg-open", "http://127.0.0.1:4567"])
+  }
   Server.run!
 else
   raise "targets file was not found!".red unless File.exist?(options.file)

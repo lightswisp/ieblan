@@ -3,7 +3,8 @@ require "mkmf"
 REQUIRED_BINARIES = [
   "iptables",
   "ip6tables",
-  "cmd"
+  "cmd",
+  "xdg-open"
 ]
 
 def host_meets_requirements?
